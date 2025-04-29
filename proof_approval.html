@@ -66,34 +66,50 @@
   <div class="message" id="statusMessage"></div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const imageUrl = urlParams.get('image');
-    const orderId = urlParams.get('order_id');
+  const urlParams = new URLSearchParams(window.location.search);
+  const imageUrl = urlParams.get('image');
+  const orderId = urlParams.get('order_id');
 
-    document.getElementById("proofImage").src = imageUrl;
+  document.getElementById("proofImage").src = imageUrl;
 
-    function submitResponse(decision) {
-      fetch('https://hook.us2.make.com/4el2ga2d32l4eieihdnm6bk57wiunoq3', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          order_id: orderId,
-          decision: decision
-        })
+  function submitResponse(decision) {
+    fetch('https://hook.us2.make.com/4el2ga2d32l4eieihdnm6bk57wiunoq3', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        order_id: orderId,
+        decision: decision
       })
-      .then(response => {
-        if (response.ok) {
-          window.close(); // Automatically closes the popup
-        } else {
-          document.getElementById("statusMessage").textContent = "Something went wrong. Please try again.";
-        }
-      })
-      .catch(() => {
-        document.getElementById("statusMessage").textContent = "Network error. Please try again.";
-      });
-    }
-  </script>
+    })
+    .then(response => {
+      if (response.ok) {
+        const msg = `Thank you! You have ${decision} the proof. This window will close in 5 seconds.`;
+        document.getElementById("statusMessage").textContent = msg;
+
+        // Wait 5 seconds, then close
+        setTimeout(() => {
+          window.close();
+
+          // If not closed, ask the user to close it manually
+          setTimeout(() => {
+            if (!window.closed) {
+              document.getElementById("statusMessage").textContent = 
+                `${msg} Please close this window.`;
+            }
+          }, 500);
+        }, 5000);
+      } else {
+        document.getElementById("statusMessage").textContent = 
+          "Something went wrong. Please try again.";
+      }
+    })
+    .catch(() => {
+      document.getElementById("statusMessage").textContent = 
+        "Network error. Please try again.";
+    });
+  }
+</script>
 </body>
 </html>
