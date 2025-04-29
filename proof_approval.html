@@ -54,11 +54,15 @@
 </head>
 <body>
   <h2>Please review your proof</h2>
-  <img id="proofImage" src="" alt="Proof Image"/>
+  
+  <!-- Buttons ABOVE the image -->
   <div>
     <button class="button approve" onclick="submitResponse('approved')">Approve</button>
     <button class="button reject" onclick="submitResponse('rejected')">Reject</button>
   </div>
+
+  <img id="proofImage" src="" alt="Proof Image"/>
+
   <div class="message" id="statusMessage"></div>
 
   <script>
@@ -81,7 +85,7 @@
       })
       .then(response => {
         if (response.ok) {
-          document.getElementById("statusMessage").textContent = `Thank you! You have ${decision} the proof.`;
+          window.close(); // Automatically closes the popup
         } else {
           document.getElementById("statusMessage").textContent = "Something went wrong. Please try again.";
         }
