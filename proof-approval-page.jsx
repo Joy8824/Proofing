@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { useEffect, useState } from 'react';
 
 export default function ProofApprovalPage() {
