@@ -1,26 +1,31 @@
 // middleware.js
 import { NextResponse } from 'next/server';
 
-const BASIC_AUTH_USER = 'yourUsername';
-const BASIC_AUTH_PASS = 'yourPassword';
-
 export function middleware(request) {
-  const authHeader = request.headers.get('authorization');
+  const basicAuth = request.headers.get('authorization');
+  const USER = process.env.BASIC_AUTH_USER;
+  const PASS = process.env.BASIC_AUTH_PASS;
 
-  if (authHeader) {
-    const base64Credentials = authHeader.split(' ')[1];
-    const credentials = atob(base64Credentials);
-    const [username, password] = credentials.split(':');
+  if (basicAuth) {
+    const [scheme, encoded] = basicAuth.split(' ');
+    if (scheme === 'Basic') {
+      const decoded = atob(encoded);
+      const [user, pass] = decoded.split(':');
 
-    if (username === BASIC_AUTH_USER && password === BASIC_AUTH_PASS) {
-      return NextResponse.next();
+      if (user === USER && pass === PASS) {
+        return NextResponse.next();
+      }
     }
   }
 
-  return new Response('Authentication required', {
+  return new NextResponse('Authentication Required', {
     status: 401,
     headers: {
       'WWW-Authenticate': 'Basic realm="Secure Area"',
     },
   });
 }
+
+export const config = {
+  matcher: ['/proof'], // Protect the /proof route
+};
